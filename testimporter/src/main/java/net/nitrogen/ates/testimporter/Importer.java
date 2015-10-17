@@ -6,10 +6,10 @@ import net.nitrogen.ates.core.config.DBConfig;
 import net.nitrogen.ates.core.entity.TestCase;
 import net.nitrogen.ates.core.entity.TestGroup;
 import net.nitrogen.ates.core.entity.TestGroupTestCase;
-import net.nitrogen.ates.core.model.TestCaseModel;
-import net.nitrogen.ates.core.model.TestGroupModel;
-import net.nitrogen.ates.core.model.TestGroupTestCaseModel;
-import net.nitrogen.ates.core.model.TestSuiteTestCaseModel;
+import net.nitrogen.ates.core.model.test_case.TestCaseModel;
+import net.nitrogen.ates.core.model.test_group.TestGroupModel;
+import net.nitrogen.ates.core.model.test_group.TestGroupTestCaseModel;
+import net.nitrogen.ates.core.model.test_suite.TestSuiteTestCaseModel;
 import net.nitrogen.ates.util.PropertiesUtil;
 
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class Importer {
 		TestCaseModel.me.reloadTestCases(this.projectId, testCasesToReload);
 		TestGroupModel.me.deleteTestGroupsAndRespectiveTestGroupTestCases(this.projectId);
 		TestGroupModel.me.insertTestGroups(testGroupsToReload);
-		List<TestGroup> testGroups = TestGroupModel.me.findTestGroups(this.projectId);
+		List<TestGroupModel> testGroups = TestGroupModel.me.findTestGroups(this.projectId);
 		List<TestGroupTestCase> testGroupTestCases = new ArrayList<TestGroupTestCase>();
 
 		for (Map.Entry<String, List<String>> rawTestGroupTestCase : rawTestGroupTestCasesToReload.entrySet()) {
@@ -55,10 +55,10 @@ public class Importer {
 		druidPlugin.stop();
 	}
 
-	private TestGroup searchTestGroup(List<TestGroup> testGroups, String name) {
-		for (TestGroup testGroup : testGroups) {
+	private TestGroup searchTestGroup(List<TestGroupModel> testGroups, String name) {
+		for (TestGroupModel testGroup : testGroups) {
 			if (testGroup.getName().equals(name)) {
-				return testGroup;
+				return null; // TODO. testGroup;
 			}
 		}
 

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.nitrogen.ates.core.entity.TestCase;
 import net.nitrogen.ates.core.model.project.ProjectModel;
 import net.nitrogen.ates.util.StringUtil;
 
@@ -151,7 +152,7 @@ public class TestCaseModel extends Model<TestCaseModel> {
         return find(sql, projectId, ProjectModel.me.findLatestTestCaseVersionForProject(projectId));
     }
 
-    public void reloadTestCases(final long projectId, List<TestCaseModel> testCases) {
+    public void reloadTestCases(final long projectId, List<TestCase> testCasesToReload) {
         long version = generateTestCaseVersion();
         Map<String, String> existingCases = findAllCaseNameIdMap(projectId);
         ProjectModel.me.updateLatestTestCaseVersionForProject(projectId, version);
@@ -173,12 +174,12 @@ public class TestCaseModel extends Model<TestCaseModel> {
                 Fields.NAME,
                 Fields.PROJECT_ID);
 
-        final Object[][] tmpUpdateParams = new Object[testCases.size()][UPDATE_PARAMS_SIZE];
-        final Object[][] tmpInsertParams = new Object[testCases.size()][INSERT_PARAMS_SIZE];
+        final Object[][] tmpUpdateParams = new Object[testCasesToReload.size()][UPDATE_PARAMS_SIZE];
+        final Object[][] tmpInsertParams = new Object[testCasesToReload.size()][INSERT_PARAMS_SIZE];
         int caseNumToBeUpdated = 0;
         int caseNumToBeInserted = 0;
 
-        for (TestCaseModel testcase : testCases) {
+        for (TestCase testcase : testCasesToReload) {
             final String idStr = existingCases.get(testcase.getName());
             if (idStr == null || idStr.isEmpty()) {
                 // No test case with the same name, insert it.

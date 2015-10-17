@@ -4,6 +4,8 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Model;
 
+import net.nitrogen.ates.core.entity.TestGroup;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -71,14 +73,14 @@ public class TestGroupModel extends Model<TestGroupModel> {
                 projectId);
     }
 
-    public void insertTestGroups(List<TestGroupModel> testGroups) {
+    public void insertTestGroups(List<TestGroup> testGroupsToReload) {
         final int INSERT_TEST_GROUP_PARAMS_SIZE = 2;
         final String insertTestGroupSql = String.format("INSERT `%s`(`%s`,`%s`) VALUES(?,?)", TABLE, Fields.NAME, Fields.PROJECT_ID);
-        final Object[][] insertTestGroupParams = new Object[testGroups.size()][INSERT_TEST_GROUP_PARAMS_SIZE];
+        final Object[][] insertTestGroupParams = new Object[testGroupsToReload.size()][INSERT_TEST_GROUP_PARAMS_SIZE];
 
-        for (int i = 0; i < testGroups.size(); i++) {
-            insertTestGroupParams[i][0] = testGroups.get(i).getName();
-            insertTestGroupParams[i][1] = testGroups.get(i).getProjectId();
+        for (int i = 0; i < testGroupsToReload.size(); i++) {
+            insertTestGroupParams[i][0] = testGroupsToReload.get(i).getName();
+            insertTestGroupParams[i][1] = testGroupsToReload.get(i).getProjectId();
         }
 
         Db.tx(new IAtom() {
@@ -112,4 +114,5 @@ public class TestGroupModel extends Model<TestGroupModel> {
             }
         });
     }
+
 }
