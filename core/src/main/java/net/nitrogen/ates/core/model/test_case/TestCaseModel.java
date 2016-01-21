@@ -9,15 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.nitrogen.ates.core.entity.TestCase;
-import net.nitrogen.ates.core.model.project.ProjectModel;
-import net.nitrogen.ates.util.StringUtil;
-
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Model;
+
+import net.nitrogen.ates.core.model.project.ProjectModel;
+import net.nitrogen.ates.util.StringUtil;
 
 public class TestCaseModel extends Model<TestCaseModel> {
     public static final int MAX_TEST_NAME_LENGTH = 80;
@@ -42,7 +41,8 @@ public class TestCaseModel extends Model<TestCaseModel> {
             testCaseModel.setName(rs.getString(Fields.NAME));
             testCaseModel.setMappingId(rs.getString(Fields.MAPPING_ID));
             testCaseModel.setVersion(rs.getLong(Fields.VERSION));
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -152,20 +152,15 @@ public class TestCaseModel extends Model<TestCaseModel> {
         return find(sql, projectId, ProjectModel.me.findLatestTestCaseVersionForProject(projectId));
     }
 
-    public void reloadTestCases(final long projectId, List<TestCase> testCasesToReload) {
+    public void reloadTestCases(final long projectId, List<TestCaseModel> testCasesToReload) {
         long version = generateTestCaseVersion();
         Map<String, String> existingCases = findAllCaseNameIdMap(projectId);
         ProjectModel.me.updateLatestTestCaseVersionForProject(projectId, version);
 
         final int UPDATE_PARAMS_SIZE = 4;
         final int INSERT_PARAMS_SIZE = 4;
-        final String updateSql = String.format(
-                "UPDATE `%s` SET `%s`=?, `%s`=? WHERE `%s`=? AND `%s`=?;",
-                TABLE,
-                Fields.VERSION,
-                Fields.MAPPING_ID,
-                Fields.NAME,
-                Fields.PROJECT_ID);
+        final String updateSql = String
+                .format("UPDATE `%s` SET `%s`=?, `%s`=? WHERE `%s`=? AND `%s`=?;", TABLE, Fields.VERSION, Fields.MAPPING_ID, Fields.NAME, Fields.PROJECT_ID);
         final String insertSql = String.format(
                 "INSERT INTO `%s` (`%s`, `%s`, `%s`, `%s`) VALUES (?, ?, ?, ?)",
                 TABLE,
@@ -179,7 +174,7 @@ public class TestCaseModel extends Model<TestCaseModel> {
         int caseNumToBeUpdated = 0;
         int caseNumToBeInserted = 0;
 
-        for (TestCase testcase : testCasesToReload) {
+        for (TestCaseModel testcase : testCasesToReload) {
             final String idStr = existingCases.get(testcase.getName());
             if (idStr == null || idStr.isEmpty()) {
                 // No test case with the same name, insert it.
@@ -188,7 +183,8 @@ public class TestCaseModel extends Model<TestCaseModel> {
                 tmpInsertParams[caseNumToBeInserted][2] = testcase.getName();
                 tmpInsertParams[caseNumToBeInserted][3] = projectId;
                 caseNumToBeInserted++;
-            } else {
+            }
+            else {
                 // There is an existing entry for this case, update it.
                 tmpUpdateParams[caseNumToBeUpdated][0] = version;
                 tmpUpdateParams[caseNumToBeUpdated][1] = testcase.getMappingId();
