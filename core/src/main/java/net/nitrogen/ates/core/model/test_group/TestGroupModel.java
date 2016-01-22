@@ -1,14 +1,12 @@
 package net.nitrogen.ates.core.model.test_group;
 
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.IAtom;
-import com.jfinal.plugin.activerecord.Model;
-
-import net.nitrogen.ates.core.entity.TestGroup;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+
+import com.jfinal.plugin.activerecord.Db;
+import com.jfinal.plugin.activerecord.IAtom;
+import com.jfinal.plugin.activerecord.Model;
 
 public class TestGroupModel extends Model<TestGroupModel> {
     public static final String TABLE = "test_group";
@@ -28,7 +26,8 @@ public class TestGroupModel extends Model<TestGroupModel> {
             testGroup.setId(rs.getLong(Fields.ID));
             testGroup.setName(rs.getString(Fields.NAME));
             testGroup.setProjectId(rs.getLong(Fields.PROJECT_ID));
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
 
@@ -63,7 +62,7 @@ public class TestGroupModel extends Model<TestGroupModel> {
         return TestGroupTestCaseModel.me.findTestGroupTestCases(this.getId());
     }
 
-    public TestGroupModel findTestGroup(long testGroupId){
+    public TestGroupModel findTestGroup(long testGroupId) {
         return findById(testGroupId);
     }
 
@@ -73,7 +72,7 @@ public class TestGroupModel extends Model<TestGroupModel> {
                 projectId);
     }
 
-    public void insertTestGroups(List<TestGroup> testGroupsToReload) {
+    public void insertTestGroups(List<TestGroupModel> testGroupsToReload) {
         final int INSERT_TEST_GROUP_PARAMS_SIZE = 2;
         final String insertTestGroupSql = String.format("INSERT `%s`(`%s`,`%s`) VALUES(?,?)", TABLE, Fields.NAME, Fields.PROJECT_ID);
         final Object[][] insertTestGroupParams = new Object[testGroupsToReload.size()][INSERT_TEST_GROUP_PARAMS_SIZE];
