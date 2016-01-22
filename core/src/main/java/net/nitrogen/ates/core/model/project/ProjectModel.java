@@ -1,11 +1,13 @@
 package net.nitrogen.ates.core.model.project;
 
+import com.jfinal.plugin.activerecord.Model;
+
+import net.nitrogen.ates.core.model.test_case.TestCaseModel;
+
+import java.text.DateFormatSymbols;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import com.jfinal.plugin.activerecord.Model;
-import net.nitrogen.ates.core.model.test_case.TestCaseModel;
 
 public class ProjectModel extends Model<ProjectModel> {
     public static final String TABLE = "project";
@@ -63,6 +65,20 @@ public class ProjectModel extends Model<ProjectModel> {
 
     public long getLatestTestCaseVersion() {
         return this.getLong(Fields.LATEST_TEST_CASE_VERSION);
+    }
+
+    public String getReadableLatestTestCaseVersion() {
+        String date = "";
+        long value = this.getLatestTestCaseVersion();
+        long year = (value / 100000000);
+        int mont = (int) ((value / 1000000) % 100);
+        long days = (value / 10000) % 100;
+        long hour = (value / 100) % 100;
+        long mins = value % 100;
+        if (year > 0) {
+            date = String.format("%s %s at %d:%d", days, new DateFormatSymbols().getShortMonths()[mont - 1], hour, mins);
+        }
+        return date;
     }
 
     public void setLatestTestCaseVersion(long version) {

@@ -7,8 +7,6 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.IAtom;
 import com.jfinal.plugin.activerecord.Model;
 
-import net.nitrogen.ates.core.entity.TestGroupTestCase;
-
 public class TestGroupTestCaseModel extends Model<TestGroupTestCaseModel> {
     public static final String TABLE = "test_group-test_case";
 
@@ -45,16 +43,18 @@ public class TestGroupTestCaseModel extends Model<TestGroupTestCaseModel> {
     }
 
     public List<TestGroupTestCaseModel> findTestGroupTestCases(long testGroupId) {
-        return find(String.format(
-                "SELECT `%s`,`%s`,`%s` FROM `%s` WHERE `%s`=?",
-                Fields.ID,
-                Fields.TEST_GROUP_ID,
-                Fields.TEST_CASE_ID,
-                TABLE,
-                Fields.TEST_GROUP_ID), testGroupId);
+        return find(
+                String.format(
+                        "SELECT `%s`,`%s`,`%s` FROM `%s` WHERE `%s`=?",
+                        Fields.ID,
+                        Fields.TEST_GROUP_ID,
+                        Fields.TEST_CASE_ID,
+                        TABLE,
+                        Fields.TEST_GROUP_ID),
+                testGroupId);
     }
 
-    public void insertTestGroupTestCases(List<TestGroupTestCase> testGroupTestCases) {
+    public void insertTestGroupTestCases(List<TestGroupTestCaseModel> testGroupTestCases) {
         final int INSERT_TEST_GROUP_TEST_CASE_PARAMS_SIZE = 2;
         final String insertTestGroupTestCaseSql = String.format(
                 "INSERT `%s`(`%s`,`%s`) VALUES(?,?)",
