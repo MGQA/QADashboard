@@ -34,7 +34,7 @@ public class TestResultReporter {
     public static final String DRIVER_ATTR = "driver";
     public static String IP = "";
     private static final String TESTCLASS_TESTMETHOD_DELIMITER = ".";
-    private static final String NGINX_PORT = "8000";
+    private static final String NGINX_PORT = "80";
     private static final String NGINX_PATH = "ates_test_result_screenshots";
     private static final String NGINX_REAL_PATH = "C:/ates/test_output_screenshots";
 
