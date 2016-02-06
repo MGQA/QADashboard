@@ -1,5 +1,16 @@
 package net.nitrogen.ates.testresultreporter;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.Inet4Address;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.Properties;
+
 import org.apache.commons.io.FileUtils;
 import org.joda.time.DateTime;
 import org.openqa.selenium.OutputType;
@@ -19,30 +30,18 @@ import net.nitrogen.ates.core.model.test_case.TestCaseModel;
 import net.nitrogen.ates.core.model.test_result.TestResultModel;
 import net.nitrogen.ates.util.PropertiesUtil;
 
-import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
-import java.sql.SQLException;
-import java.util.Properties;
-
 public class TestResultReporter {
     public static final String DRIVER_ATTR = "driver";
+    public static String IP = "";
     private static final String TESTCLASS_TESTMETHOD_DELIMITER = ".";
     private static final String NGINX_PORT = "8000";
     private static final String NGINX_PATH = "ates_test_result_screenshots";
     private static final String NGINX_REAL_PATH = "C:/ates/test_output_screenshots";
 
-    public void report(ITestResult result, ExecResult status) throws ClassNotFoundException, SQLException, UnknownHostException {
+    public void report(ITestResult result, ExecResult status) throws ClassNotFoundException, SQLException, IOException {
         Properties props = PropertiesUtil.load("config.txt");
-        DruidPlugin druidPlugin = DBConfig.createDruidPlugin(
-                props.getProperty("jdbcUrl"),
-                props.getProperty("dbuser"),
-                props.getProperty("dbpassword"),
-                0,
-                0,
-                1);
+        DruidPlugin druidPlugin = DBConfig
+                .createDruidPlugin(props.getProperty("jdbcUrl"), props.getProperty("dbuser"), props.getProperty("dbpassword"), 0, 0, 1);
         druidPlugin.start();
 
         String configName = String.format("ates_testresultreporter_arp_config_%d", DateTime.now().getMillis());
@@ -55,7 +54,7 @@ public class TestResultReporter {
         druidPlugin.stop();
     }
 
-    private TestResultModel prepareTestResult(ITestResult result, ExecResult status) throws UnknownHostException {
+    private TestResultModel prepareTestResult(ITestResult result, ExecResult status) throws IOException {
         TestResultModel testResult = new TestResultModel();
         testResult.setEntryId(EnvParameter.entryId());
         final String caseName = String.format("%s%s%s", result.getTestClass().getName(), TESTCLASS_TESTMETHOD_DELIMITER, result.getMethod().getMethodName());
@@ -99,20 +98,29 @@ public class TestResultReporter {
         return testResult;
     }
 
-    private void takeScreenshot(ITestResult result, StringBuilder message, TestResultModel testResult) throws UnknownHostException {
+    private void takeScreenshot(ITestResult result, StringBuilder message, TestResultModel testResult) throws IOException {
         String fileName = String.format("%s.png", result.getName() + "_" + System.currentTimeMillis());
         String imageFolderPath = String.format("%s/%d", NGINX_REAL_PATH, testResult.getProjectId());
         String imagePath = String.format("%s/%d/%s", NGINX_REAL_PATH, testResult.getProjectId(), fileName);
         File folder = new File(imageFolderPath);
         folder.mkdirs();
         // String imagePath = String.format("%s%s", file.getAbsolutePath(), imageRelativePath);
-        String imageUrl = String.format(
-                "http://%s:%s/%s/%d/%s",
-                Inet4Address.getLocalHost().getHostAddress(),
-                NGINX_PORT,
-                NGINX_PATH,
-                testResult.getProjectId(),
-                fileName);
+
+        if (IP == null || IP.isEmpty()) {
+            IP = System.getProperty("slave.ip");
+        }
+        if (IP == null || IP.isEmpty()) {
+            URL whatismyip = new URL("http://checkip.amazonaws.com");
+            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+            IP = in.readLine(); // you get the IP as a String
+            in.close();
+            System.setProperty("slave.ip", IP);
+        }
+        if (IP == null || IP.isEmpty()) {
+            IP = Inet4Address.getLocalHost().getHostAddress();
+        }
+
+        String imageUrl = String.format("http://%s:%s/%s/%d/%s", IP, NGINX_PORT, NGINX_PATH, testResult.getProjectId(), fileName);
         ITestContext context = result.getTestContext();
         WebDriver driver = (WebDriver) context.getAttribute(DRIVER_ATTR + Thread.currentThread().getId());
 
@@ -123,7 +131,8 @@ public class TestResultReporter {
                 File saved = new File(imagePath);
                 FileUtils.copyFile(f, saved);
                 testResult.setScreenshotUrl(imageUrl);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 message.append("Error generating screenshot: " + e.getMessage());
                 e.printStackTrace();
             }

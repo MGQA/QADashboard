@@ -1,8 +1,8 @@
 package net.nitrogen.ates.core.model.slave;
 
-import com.jfinal.plugin.activerecord.Model;
-
 import java.util.List;
+
+import com.jfinal.plugin.activerecord.Model;
 
 public class SlaveModel extends Model<SlaveModel> {
     public static final String TABLE = "slave";
@@ -78,7 +78,7 @@ public class SlaveModel extends Model<SlaveModel> {
         SlaveModel m = new SlaveModel();
         m.setMachineName(slaveName);
         m.setStatus(0);
-        m.setConcurrency(1);
+        m.setConcurrency(3);
         m.setIsListening(true);
         m.save();
     }

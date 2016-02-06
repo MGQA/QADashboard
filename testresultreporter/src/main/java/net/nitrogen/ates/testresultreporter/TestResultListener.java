@@ -1,13 +1,15 @@
 package net.nitrogen.ates.testresultreporter;
 
-import net.nitrogen.ates.core.enumeration.ExecResult;
-import net.nitrogen.ates.core.env.EnvParameter;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.sql.SQLException;
+
 import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
-import java.net.UnknownHostException;
-import java.sql.SQLException;
+import net.nitrogen.ates.core.enumeration.ExecResult;
+import net.nitrogen.ates.core.env.EnvParameter;
 
 public class TestResultListener implements ITestListener {
     @Override
@@ -45,11 +47,17 @@ public class TestResultListener implements ITestListener {
         if (!EnvParameter.isDebug()) {
             try {
                 new TestResultReporter().report(result, status);
-            } catch (SQLException e) {
+            }
+            catch (SQLException e) {
                 e.printStackTrace();
-            } catch (ClassNotFoundException e) {
+            }
+            catch (ClassNotFoundException e) {
                 e.printStackTrace();
-            } catch (UnknownHostException e) {
+            }
+            catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            catch (IOException e) {
                 e.printStackTrace();
             }
         }
