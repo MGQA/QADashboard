@@ -13,6 +13,7 @@ public class SlaveModel extends Model<SlaveModel> {
         public static final String STATUS = "status";
         public static final String CONCURRENCY = "concurrency";
         public static final String IS_LISTENING = "is_listening";
+        public static final String PUBLIC_IP = "public_ip";
     }
 
     public static final SlaveModel me = new SlaveModel();

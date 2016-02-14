@@ -26,6 +26,7 @@ import net.nitrogen.ates.core.config.DBConfig;
 import net.nitrogen.ates.core.enumeration.ExecResult;
 import net.nitrogen.ates.core.env.EnvParameter;
 import net.nitrogen.ates.core.model.email.EmailModel;
+import net.nitrogen.ates.core.model.slave.SlaveModel;
 import net.nitrogen.ates.core.model.test_case.TestCaseModel;
 import net.nitrogen.ates.core.model.test_result.TestResultModel;
 import net.nitrogen.ates.util.PropertiesUtil;
@@ -38,7 +39,7 @@ public class TestResultReporter {
     private static final String NGINX_PATH = "ates_test_result_screenshots";
     private static final String NGINX_REAL_PATH = "C:/ates/test_output_screenshots";
 
-    public void report(ITestResult result, ExecResult status) throws ClassNotFoundException, SQLException, IOException {
+    public void report(ITestResult result, ExecResult status) throws SQLException {
         Properties props = PropertiesUtil.load("config.txt");
         DruidPlugin druidPlugin = DBConfig
                 .createDruidPlugin(props.getProperty("jdbcUrl"), props.getProperty("dbuser"), props.getProperty("dbpassword"), 0, 0, 1);
@@ -54,7 +55,7 @@ public class TestResultReporter {
         druidPlugin.stop();
     }
 
-    private TestResultModel prepareTestResult(ITestResult result, ExecResult status) throws IOException {
+    private TestResultModel prepareTestResult(ITestResult result, ExecResult status) {
         TestResultModel testResult = new TestResultModel();
         testResult.setEntryId(EnvParameter.entryId());
         final String caseName = String.format("%s%s%s", result.getTestClass().getName(), TESTCLASS_TESTMETHOD_DELIMITER, result.getMethod().getMethodName());
@@ -98,7 +99,7 @@ public class TestResultReporter {
         return testResult;
     }
 
-    private void takeScreenshot(ITestResult result, StringBuilder message, TestResultModel testResult) throws IOException {
+    private void takeScreenshot(ITestResult result, StringBuilder message, TestResultModel testResult) {
         String fileName = String.format("%s.png", result.getName() + "_" + System.currentTimeMillis());
         String imageFolderPath = String.format("%s/%d", NGINX_REAL_PATH, testResult.getProjectId());
         String imagePath = String.format("%s/%d/%s", NGINX_REAL_PATH, testResult.getProjectId(), fileName);
@@ -106,18 +107,34 @@ public class TestResultReporter {
         folder.mkdirs();
         // String imagePath = String.format("%s%s", file.getAbsolutePath(), imageRelativePath);
 
-        if (IP == null || IP.isEmpty()) {
-            IP = System.getProperty("slave.ip");
+        try {
+            if (IP == null || IP.isEmpty()) {
+                IP = System.getProperty("slave.ip");
+            }
+            if (IP == null || IP.isEmpty()) {
+                IP = SlaveModel.me.findFirst("select * from slave where machine_name = '" + EnvParameter.machineName() + "'").get(SlaveModel.Fields.PUBLIC_IP);
+            }
+            if (IP == null || IP.isEmpty()) {
+                URL whatismyip;
+                whatismyip = new URL("http://checkip.amazonaws.com");
+                BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
+                IP = in.readLine(); // you get the IP as a String
+                in.close();
+                SlaveModel.me.findFirst("select * from slave where machine_name = '" + EnvParameter.machineName() + "'").set(SlaveModel.Fields.PUBLIC_IP, IP)
+                        .save();
+                System.setProperty("slave.ip", IP);
+            }
+            if (IP == null || IP.isEmpty()) {
+                IP = Inet4Address.getLocalHost().getHostAddress();
+                SlaveModel.me.findFirst("select * from slave where machine_name = '" + EnvParameter.machineName() + "'").set(SlaveModel.Fields.PUBLIC_IP, IP)
+                        .save();
+                System.setProperty("slave.ip", IP);
+            }
         }
-        if (IP == null || IP.isEmpty()) {
-            URL whatismyip = new URL("http://checkip.amazonaws.com");
-            BufferedReader in = new BufferedReader(new InputStreamReader(whatismyip.openStream()));
-            IP = in.readLine(); // you get the IP as a String
-            in.close();
-            System.setProperty("slave.ip", IP);
-        }
-        if (IP == null || IP.isEmpty()) {
-            IP = Inet4Address.getLocalHost().getHostAddress();
+        catch (IOException e) {
+            message.append("Error generating screenshot: " + e.getMessage());
+            e.printStackTrace();
+            IP = "";
         }
 
         String imageUrl = String.format("http://%s:%s/%s/%d/%s", IP, NGINX_PORT, NGINX_PATH, testResult.getProjectId(), fileName);

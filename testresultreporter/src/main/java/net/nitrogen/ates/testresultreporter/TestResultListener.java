@@ -1,7 +1,5 @@
 package net.nitrogen.ates.testresultreporter;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 
 import org.testng.ITestContext;
@@ -49,15 +47,6 @@ public class TestResultListener implements ITestListener {
                 new TestResultReporter().report(result, status);
             }
             catch (SQLException e) {
-                e.printStackTrace();
-            }
-            catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-            catch (IOException e) {
                 e.printStackTrace();
             }
         }

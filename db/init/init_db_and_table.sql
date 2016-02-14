@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS `slave` (
   `status` INT,
   `concurrency` INT NOT NULL,
   `is_listening` BIT NOT NULL,
+  `public_ip` VARCHAR(100),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 DEFAULT COLLATE utf8_unicode_ci;
 
