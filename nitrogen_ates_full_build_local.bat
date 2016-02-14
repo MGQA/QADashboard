@@ -1,5 +1,5 @@
-SET project_path_db_config=D:\Git\nitrogen-ates-misc\dbconfig
-SET project_root_path=D:\Git\nitrogen-ates
+SET project_path_db_config=C:\ates\misc\dbconfig
+SET project_root_path=C:\ates\libsource
 SET project_path_util=%project_root_path%\util
 SET project_path_core=%project_root_path%\core
 SET project_path_daemon=%project_root_path%\daemon
@@ -15,10 +15,10 @@ MKDIR %project_path_dashboard%\src\main\resources
 MKDIR %project_path_testimporter%\src\main\resources
 MKDIR %project_path_testresultreporter%\src\main\resources
 
-COPY %project_path_db_config%\configLocal.txt %project_path_daemon%\src\main\resources\config.txt /y
-COPY %project_path_db_config%\configLocal.txt %project_path_dashboard%\src\main\resources\config.txt /y
-COPY %project_path_db_config%\configLocal.txt %project_path_testimporter%\src\main\resources\config.txt /y
-COPY %project_path_db_config%\configLocal.txt %project_path_testresultreporter%\src\main\resources\config.txt /y
+COPY %project_path_db_config%\configProd.txt %project_path_daemon%\src\main\resources\config.txt /y
+COPY %project_path_db_config%\configProd.txt %project_path_dashboard%\src\main\resources\config.txt /y
+COPY %project_path_db_config%\configProd.txt %project_path_testimporter%\src\main\resources\config.txt /y
+COPY %project_path_db_config%\configProd.txt %project_path_testresultreporter%\src\main\resources\config.txt /y
 
 CD /D %project_path_util%
 CALL mvn clean compile package install

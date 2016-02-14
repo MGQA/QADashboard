@@ -134,7 +134,6 @@ public class TestResultReporter {
         catch (IOException e) {
             message.append("Error generating screenshot: " + e.getMessage());
             e.printStackTrace();
-            IP = "";
         }
 
         String imageUrl = String.format("http://%s:%s/%s/%d/%s", IP, NGINX_PORT, NGINX_PATH, testResult.getProjectId(), fileName);

@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS `test_result` (
   `start_time` DATETIME NOT NULL,
   `end_time` DATETIME NOT NULL,
   `exec_result` INT NOT NULL,
-  `message` VARCHAR(2000) NOT NULL,
+  `message` TEXT(20000) NOT NULL,
   `stack_trace` TEXT(20000) NOT NULL,
   `screenshot_url` VARCHAR(500) NOT NULL,
   `execution_id` INT UNSIGNED NOT NULL,
