@@ -121,13 +121,13 @@ public class TestResultReporter {
                 IP = in.readLine(); // you get the IP as a String
                 in.close();
                 SlaveModel.me.findFirst("select * from slave where machine_name = '" + EnvParameter.machineName() + "'").set(SlaveModel.Fields.PUBLIC_IP, IP)
-                        .save();
+                        .update();
                 System.setProperty("slave.ip", IP);
             }
             if (IP == null || IP.isEmpty()) {
                 IP = Inet4Address.getLocalHost().getHostAddress();
                 SlaveModel.me.findFirst("select * from slave where machine_name = '" + EnvParameter.machineName() + "'").set(SlaveModel.Fields.PUBLIC_IP, IP)
-                        .save();
+                        .update();
                 System.setProperty("slave.ip", IP);
             }
         }
