@@ -26,7 +26,8 @@ public class TestResultListener implements ITestListener {
 
     @Override
     public void onTestSkipped(ITestResult result) {
-        this.reportResultIfNotDebug(result, ExecResult.SKIPPED);
+        result.setStatus(ITestResult.FAILURE);
+        this.reportResultIfNotDebug(result, ExecResult.FAILED);
     }
 
     @Override
