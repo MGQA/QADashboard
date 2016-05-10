@@ -3,12 +3,12 @@ package net.nitrogen.ates.core.model.test_result;
 import java.sql.Timestamp;
 import java.util.List;
 
-import net.nitrogen.ates.core.enumeration.ExecResult;
-import net.nitrogen.ates.util.DateTimeUtil;
-
 import org.joda.time.DateTime;
 
 import com.jfinal.plugin.activerecord.Model;
+
+import net.nitrogen.ates.core.enumeration.ExecResult;
+import net.nitrogen.ates.util.DateTimeUtil;
 
 public class TestResultModel extends Model<TestResultModel> {
     public static final String TABLE = "test_result";
@@ -206,20 +206,31 @@ public class TestResultModel extends Model<TestResultModel> {
     }
 
     public long insertTestResult(TestResultModel testResult) {
-        TestResultModel m = new TestResultModel();
-
-        m.setEntryId(testResult.getEntryId());
-        m.setTestCaseId(testResult.getTestCaseId());
-        m.setSlaveName(testResult.getSlaveName());
-        m.setStartTime(testResult.getStartTime());
+        boolean hasRecord = true;
+        TestResultModel m;
+        m = this.findById(testResult.getEntryId());
+        if (m == null) {
+            hasRecord = false;
+            m = new TestResultModel();
+        }
         m.setEndTime(testResult.getEndTime());
         m.setExecResult(testResult.getExecResult());
         m.setMessage(testResult.getMessage());
         m.setStackTrace(testResult.getStackTrace());
         m.setScreenshotUrl(testResult.getScreenshotUrl());
-        m.setExecutionId(testResult.getExecutionId());
-        m.setProjectId(testResult.getProjectId());
-        m.save();
+
+        if (hasRecord) {
+            m.update();
+        }
+        else {
+            m.setEntryId(testResult.getEntryId());
+            m.setTestCaseId(testResult.getTestCaseId());
+            m.setSlaveName(testResult.getSlaveName());
+            m.setStartTime(testResult.getStartTime());
+            m.setExecutionId(testResult.getExecutionId());
+            m.setProjectId(testResult.getProjectId());
+            m.save();
+        }
 
         return m.getLong(Fields.ID);
     }
