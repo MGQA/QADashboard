@@ -205,14 +205,42 @@ public class TestResultModel extends Model<TestResultModel> {
         return find(sql, projectId);
     }
 
-    public long insertTestResult(TestResultModel testResult) {
+    public List<TestResultModel> findTestResults(long projectId, long testcaseId, long executionId) {
+        String sql = String.format(
+                "SELECT `%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s`,`%s` FROM `%s` WHERE `%s`=? AND `%s`=? AND `%s`=? ORDER BY `%s` DESC",
+                Fields.ID,
+                Fields.ENTRY_ID,
+                Fields.TEST_CASE_ID,
+                Fields.SLAVE_NAME,
+                Fields.START_TIME,
+                Fields.END_TIME,
+                Fields.EXEC_RESULT,
+                Fields.MESSAGE,
+                Fields.STACK_TRACE,
+                Fields.SCREENSHOT_URL,
+                Fields.EXECUTION_ID,
+                Fields.PROJECT_ID,
+                TABLE,
+                Fields.PROJECT_ID,
+                Fields.TEST_CASE_ID,
+                Fields.EXECUTION_ID,
+                Fields.ID);
+
+        return find(sql, projectId, testcaseId, executionId);
+    }
+
+    public long insertUpdateTestResult(TestResultModel testResult) {
         boolean hasRecord = true;
         TestResultModel m;
-        m = this.findById(testResult.getEntryId());
-        if (m == null) {
+        List<TestResultModel> r = this.findTestResults(testResult.getProjectId(), testResult.getTestCaseId(), testResult.getExecutionId());
+        if (r == null || r.size() == 0) {
             hasRecord = false;
             m = new TestResultModel();
         }
+        else {
+            m = r.get(0);
+        }
+
         m.setEndTime(testResult.getEndTime());
         m.setExecResult(testResult.getExecResult());
         m.setMessage(testResult.getMessage());

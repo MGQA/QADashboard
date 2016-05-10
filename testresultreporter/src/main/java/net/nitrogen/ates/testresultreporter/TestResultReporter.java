@@ -48,7 +48,7 @@ public class TestResultReporter {
         System.out.println("ConfigName:" + configName);
         ActiveRecordPlugin arp = DBConfig.createActiveRecordPlugin(druidPlugin, configName);
         arp.start();
-        TestResultModel.me.insertTestResult(this.prepareTestResult(result, status));
+        TestResultModel.me.insertUpdateTestResult(this.prepareTestResult(result, status));
         // EmailModel.me.checkAndMarkExecutionEmailAsReady(EnvParameter.executionId());
         arp.stop();
         druidPlugin.stop();
