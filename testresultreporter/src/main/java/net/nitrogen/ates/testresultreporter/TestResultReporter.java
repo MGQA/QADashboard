@@ -25,7 +25,6 @@ import com.jfinal.plugin.druid.DruidPlugin;
 import net.nitrogen.ates.core.config.DBConfig;
 import net.nitrogen.ates.core.enumeration.ExecResult;
 import net.nitrogen.ates.core.env.EnvParameter;
-import net.nitrogen.ates.core.model.email.EmailModel;
 import net.nitrogen.ates.core.model.slave.SlaveModel;
 import net.nitrogen.ates.core.model.test_case.TestCaseModel;
 import net.nitrogen.ates.core.model.test_result.TestResultModel;
@@ -50,7 +49,7 @@ public class TestResultReporter {
         ActiveRecordPlugin arp = DBConfig.createActiveRecordPlugin(druidPlugin, configName);
         arp.start();
         TestResultModel.me.insertTestResult(this.prepareTestResult(result, status));
-        EmailModel.me.checkAndMarkExecutionEmailAsReady(EnvParameter.executionId());
+        // EmailModel.me.checkAndMarkExecutionEmailAsReady(EnvParameter.executionId());
         arp.stop();
         druidPlugin.stop();
     }
