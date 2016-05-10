@@ -260,7 +260,7 @@
         switch (execResultId) {
             case ates.execResultEnum["UNKNOWN"]:
                 execResultLabel = "UNKNOWN";
-                isResultUnknown = true;
+                //isResultUnknown = true;
                 break;
             case ates.execResultEnum["SKIPPED"]:
                 cssClass += " bg-yellow";
